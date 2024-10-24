@@ -2,7 +2,6 @@ import os
 import streamlit as st
 from pathlib import Path
 import zipfile
-import pyperclip  # Library to copy text to the clipboard
 
 # Function to generate the tree structure with filters and file truncation for LLM input
 def generate_tree_structure(root_dir, exclude_files=None, exclude_dirs=None, level=0, file_limit=2):
@@ -145,6 +144,10 @@ if uploaded_file is not None:
             full_output += f"\n{file_path}:\n{content}\n"
         full_output += "\n------------\nThis input is designed for providing code insights with an LLM.\n"
 
+        # Display the full output in a text area so the user can select and copy it
+        st.subheader("LLM Context Output")
+        st.text_area("Generated LLM Context", value=full_output, height=400)
+
         # Option to download the filtered tree structure, file list, and file contents as a text file
         if st.button("Download LLM Context"):
             tree_file = f"llm_context_{uploaded_file.name}.txt"
@@ -157,11 +160,6 @@ if uploaded_file is not None:
                     file_name=tree_file,
                     mime="text/plain"
                 )
-        
-        # Button to copy the entire output to clipboard
-        if st.button("Copy to Clipboard"):
-            pyperclip.copy(full_output)
-            st.success("The content has been copied to your clipboard!")
 
     else:
         st.success(f"File uploaded: {uploaded_file.name}")
